@@ -1,0 +1,11 @@
+customization:
+  distribution_code_name: Weasel
+  distribution_version: 0.15.0.0
+  generator: "Rime::SwitcherSettings"
+  modified_time: "Thu May 30 11:57:01 2024"
+  rime_version: 1.8.5
+patch:
+  schema_list:
+    - {schema: luna_quanpin}
+    - {schema: flypy_flypy}
+    - {schema: moqi_xh}
