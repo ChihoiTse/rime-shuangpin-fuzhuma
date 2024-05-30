@@ -5,5 +5,26 @@ customization:
   modified_time: "Thu May  9 23:28:15 2024"
   rime_version: 1.8.5
 patch:
-  "style/color_scheme": luna
-  "style/horizontal": true # 输入法横向显示
+  style/color_scheme: luna
+  style/horizontal: true # 输入法横向显示
+  style/inline_preedit: true # 内嵌编码（仅支持TSF）
+  # style/display_tray_icon: false  # 顯示托盤圖標
+  # style/corner_radius: 20 # 圆角
+  # style/font_face: "楷体"
+  # style/font_point: 18
+  # style/color_scheme: tf # 选择配色方案
+  # "preset_color_schemes/tf": # 自定义配色方案
+  #   name: tf
+  #   author: d
+  #   text_color: 1710618
+  #   back_color: 16382457
+  #   border_color: 15658734
+  #   label_color: 11184810
+  #   hilited_text_color: 1710618
+  #   hilited_back_color: 15790320
+  #   candidate_text_color: 1710618
+  #   comment_text_color: 1710618
+  #   hilited_candidate_text_color: 1710618
+  #   hilited_comment_text_color: 1710618
+  #   hilited_candidate_back_color: 15790320
+  #   hilited_label_color: 11184810

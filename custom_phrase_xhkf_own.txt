@@ -138,8 +138,10 @@ https://flypy.com	xhgw
 ”	oc	100
 "	oc	99
 、	od
-（	oh
-）	oj
+（	oh	100
+(	oh	99
+）	oj	100
+)	oj	99
 《	ok	90
 》	ol
 〔	on

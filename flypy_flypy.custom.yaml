@@ -1,6 +1,6 @@
 patch:
-  speller/alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA[/; # 如果不想让什么标点直接上屏，可以加在 alphabet，或者编辑标点符号为两个及以上的映射
-  speller/initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA; # initials 定义仅作为始码的按键，排除 ` 让单个的 ` 可以直接上屏
+  speller/alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA[/ # 如果不想让什么标点直接上屏，可以加在 alphabet，或者编辑标点符号为两个及以上的映射
+  speller/initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA # initials 定义仅作为始码的按键，排除 ` 让单个的 ` 可以直接上屏
 
   switches:
   - name: ascii_mode
@@ -40,6 +40,9 @@ patch:
     ## ox ：“
     - table_translator@custom_phrase_xhkf_own # 自己的快捷o符 
     ## og **
+    - table_translator@custom_phrase_super_2jian
+    - table_translator@custom_phrase_super_3jian
+    - table_translator@custom_phrase_super_3jian_no_conflict
     - reverse_lookup_translator
     - reverse_lookup_translator@reverse_stroke
     - reverse_lookup_translator@reverse_zrlf
@@ -56,89 +59,55 @@ patch:
   engine/filters:
     - lua_filter@long_word_filter       # 长词优先（顺序要求：长词优先 > Emoji）
     - simplifier@emoji                  # Emoji
-    - lua_filter@reduce_emoji_filter   # 按需启用，作用是降低Emoji在候选项中的位置排序(顺序要求：Emoji > 降低排序)
+    - lua_filter@reduce_emoji_filter    # 按需启用，作用是降低Emoji在候选项中的位置排序(顺序要求：Emoji > 降低排序)
+    - simplifier@chinese_english        # 中文转英文
     - simplifier@traditionalize         # 简繁切换
-    - simplifier@mars                   #火星文
+    - simplifier@mars                   # 火星文
     - uniquifier
 
   translator/enable_user_dict: true # 是否开启自动调频 
 
-  translator/preedit_format: 
-    # ↓↓全拼显示↓↓
-    # 复制用户输入, 一份转大写保持原样, 一份由正则转为全拼显示
-    - xform/(^.*$)/\U$1\E\t => $1 <=/
-    # 小鹤双拼转全拼, 忽略辅码
-    - xform/([ '][aoe])(\w)\w{0,2}/$1$2/
-    - xform/([ ']\w)([aeiou])\w{0,2}/$1$2/
-    - xform/([ '][bpmfdtnljqx])n\w{0,2}/$1iao/  
-    - xform/([ ']\w)g\w{0,2}/$1eng/
-    - xform/([ ']\w)q\w{0,2}/$1iu/
-    - xform/([ ']\w)w\w{0,2}/$1ei/
-    - xform/([ '][dtnlgkhjqxyvuirzcs])r\w{0,2}/$1uan/
-    - xform/([ ']\w)t\w{0,2}/$1ve/
-    - xform/([ ']\w)y\w{0,2}/$1un/
-    - xform/([ '][dtnlgkhvuirzcs])o\w{0,2}/$1uo/
-    - xform/([ ']\w)p\w{0,2}/$1ie/
-    - xform/([ '][jqx])s\w{0,2}/$1iong/
-    - xform/([ ']\w)s\w{0,2}/$1ong/
-    - xform/([ ']\w)d\w{0,2}/$1ai/
-    - xform/([ ']\w)f\w{0,2}/$1en/
-    - xform/([ ']\w)h\w{0,2}/$1ang/
-    - xform/([ ']\w)j\w{0,2}/$1an/
-    - xform/([ '][gkhvuirzcs])k\w{0,2}/$1uai/
-    - xform/([ ']\w)k\w{0,2}/$1ing/
-    - xform/([ '][jqxnl])l\w{0,2}/$1iang/
-    - xform/([ ']\w)l\w{0,2}/$1uang/
-    - xform/([ ']\w)z\w{0,2}/$1ou/
-    - xform/([ '][gkhvuirzcs])x\w{0,2}/$1ua/
-    - xform/([ ']\w)x\w{0,2}/$1ia/
-    - xform/([ ']\w)c\w{0,2}/$1ao/
-    - xform/([ '][dtgkhvuirzcs])v\w{0,2}/$1ui/
-    - xform/([ ']\w)b\w{0,2}/$1in/
-    - xform/([ ']\w)m\w{0,2}/$1ian/
-    - "xform/(^|[ '])v/$1zh/"
-    - "xform/(^|[ '])i/$1ch/"
-    - "xform/(^|[ '])u/$1sh/"
-    - xform/([ '][jqxy])v\w{0,2}/$1u/
-    - xform/([ '][nl])v\w{0,2}/$1ü/
-    # 双拼编码大写转回小写
-    - xform/(^[^a-z=<>]*)/\L$1\E/
-    - xform/=> */[/
-    - xform/ *<=/]/
-    # ------
-    # 原本内容
-    # - "xform/((^|[ '])[bpmfdtnljqx])n/$1iao/"
-    # - "xform/((^|[ '])\\w)g/$1eng/"
-    # - "xform/((^|[ '])\\w)q/$1iu/"
-    # - "xform/((^|[ '])\\w)w/$1ei/"
-    # - "xform/((^|[ '])[dtnlgkhjqxyvuirzcs])r/$1uan/"
-    # - "xform/((^|[ '])\\w)t/$1ve/"
-    # - "xform/((^|[ '])\\w)y/$1un/"
-    # - "xform/((^|[ '])[dtnlgkhvuirzcs])o/$1uo/"
-    # - "xform/((^|[ '])\\w)p/$1ie/"
-    # - "xform/((^|[ '])[jqx])s/$1iong/"
-    # - "xform/((^|[ '])\\w)s/$1ong/"
-    # - "xform/((^|[ '])\\w)d/$1ai/"
-    # - "xform/((^|[ '])\\w)f/$1en/"
-    # - "xform/((^|[ '])\\w)h/$1ang/"
-    # - "xform/((^|[ '])\\w)j/$1an/"
-    # - "xform/((^|[ '])[gkhvuirzcs])k/$1uai/"
-    # - "xform/((^|[ '])\\w)k/$1ing/"
-    # - "xform/((^|[ '])[jqxnl])l/$1iang/"
-    # - "xform/((^|[ '])\\w)l/$1uang/"
-    # - "xform/((^|[ '])\\w)z/$1ou/"
-    # - "xform/((^|[ '])[gkhvuirzcs])x/$1ua/"
-    # - "xform/((^|[ '])\\w)x/$1ia/"
-    # - "xform/((^|[ '])\\w)c/$1ao/"
-    # - "xform/((^|[ '])[dtgkhvuirzcs])v/$1ui/"
-    # - "xform/((^|[ '])\\w)b/$1in/"
-    # - "xform/((^|[ '])\\w)m/$1ian/"
-    # - "xform/(^|[ '])([aoe])\\2(\\w)/$1$2$3/"
-    # - "xform/(^|[ '])v/$1zh/"
-    # - "xform/(^|[ '])i/$1ch/"
-    # - "xform/(^|[ '])u/$1sh/"
-    # - "xform/((^|[ '])[jqxy])v/$1u/"
-    # - "xform/((^|[ '])[nl])v/$1ü/"
+  # translator/preedit_format:
+  #   # 复制用户输入, 一份转大写保持原样, 一份由正则转为全拼显示
+  #   - xform/(^.*$)/\U$1\E\t => $1 <=/
+  #   # 小鹤双拼转全拼, 忽略辅码
+  #   - xform/([ '][aoe])(\w)\w{0,2}/$1$2/
+  #   - xform/([ ']\w)([aeiou])\w{0,2}/$1$2/
+  #   - xform/([ '][bpmfdtnljqx])n\w{0,2}/$1iao/
+  #   - xform/([ ']\w)g\w{0,2}/$1eng/
+  #   - xform/([ ']\w)q\w{0,2}/$1iu/
+  #   - xform/([ ']\w)w\w{0,2}/$1ei/
+  #   - xform/([ '][dtnlgkhjqxyvuirzcs])r\w{0,2}/$1uan/
+  #   - xform/([ ']\w)t\w{0,2}/$1ve/
+  #   - xform/([ ']\w)y\w{0,2}/$1un/
+  #   - xform/([ '][dtnlgkhvuirzcs])o\w{0,2}/$1uo/
+  #   - xform/([ ']\w)p\w{0,2}/$1ie/
+  #   - xform/([ '][jqx])s\w{0,2}/$1iong/
+  #   - xform/([ ']\w)s\w{0,2}/$1ong/
+  #   - xform/([ ']\w)d\w{0,2}/$1ai/
+  #   - xform/([ ']\w)f\w{0,2}/$1en/
+  #   - xform/([ ']\w)h\w{0,2}/$1ang/
+  #   - xform/([ ']\w)j\w{0,2}/$1an/
+  #   - xform/([ '][gkhvuirzcs])k\w{0,2}/$1uai/
+  #   - xform/([ ']\w)k\w{0,2}/$1ing/
+  #   - xform/([ '][jqxnl])l\w{0,2}/$1iang/
+  #   - xform/([ ']\w)l\w{0,2}/$1uang/
+  #   - xform/([ ']\w)z\w{0,2}/$1ou/
+  #   - xform/([ '][gkhvuirzcs])x\w{0,2}/$1ua/
+  #   - xform/([ ']\w)x\w{0,2}/$1ia/
+  #   - xform/([ ']\w)c\w{0,2}/$1ao/
+  #   - xform/([ '][dtgkhvuirzcs])v\w{0,2}/$1ui/
+  #   - xform/([ ']\w)b\w{0,2}/$1in/
+  #   - xform/([ ']\w)m\w{0,2}/$1ian/
+  #   - "xform/(^|[ '])v/$1zh/"
+  #   - "xform/(^|[ '])i/$1ch/"
+  #   - "xform/(^|[ '])u/$1sh/"
+  #   - xform/([ '][jqxy])v\w{0,2}/$1u/
+  #   - xform/([ '][nl])v\w{0,2}/$1ü/
+  #   # 双拼编码大写转回小写
+  #   - xform/(^[^a-z=<>]*)/\L$1\E/
+  #   - xform/=> */[/
+  #   - xform/ *<=/]/
 
   punctuator:
     full_shape:
@@ -152,4 +121,20 @@ patch:
 
   menu/page_size: 10
 
-  # preedit_format:
+  key_binder:
+    import_preset: default
+    bindings:
+      #- { when: composing, accept: Tab, send: '[' } ## 取消注释后：tab引导辅助码
+      - { when: composing, accept: Control+m, send: Return }
+      - { when: composing, accept: Control+w, send: Control+BackSpace }
+      - { when: has_menu, accept: semicolon, send: 2 }
+      # - { when: has_menu, accept: slash, send: 3 } # 用/进行选3
+      - { when: composing, accept: Control+o, send: Shift+Right }
+      - { when: composing, accept: Control+i, send: Shift+Left }
+      - { when: has_menu, accept: "Control+e", toggle: chinese_english }
+      ## 对以下4行取消注释后：启用光标回退至特定音节后、补充辅助码的功能
+      ## （自然码等其他双拼用户请在 pinyin_switch.yaml 中设置）
+      #- { when: composing, accept: Control+1, send_sequence: '{Home}{Shift+Right}[' }
+      #- { when: composing, accept: Control+2, send_sequence: '{Home}{Shift+Right}{Shift+Right}[' }
+      #- { when: composing, accept: Control+3, send_sequence: '{Home}{Shift+Right}{Shift+Right}{Shift+Right}[' }
+      #- { when: composing, accept: Control+4, send_sequence: '{Home}{Shift+Right}{Shift+Right}{Shift+Right}{Shift+Right}[' }
