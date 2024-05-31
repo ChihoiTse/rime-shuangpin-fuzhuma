@@ -150,7 +150,7 @@ dict_data = {}
 file_list = ['8105.dict.yaml', '41448.dict.yaml', 'base.dict.yaml', 'ext.dict.yaml', 'others.dict.yaml']
 # file_list = [ 'tencent.dict.yaml']
 # Load the dict data from the provided file
-with open('./flypydz.yaml', 'r', encoding='utf-8') as dict_file:
+with open('./program/flypydz.yaml', 'r', encoding='utf-8') as dict_file:
     for line in dict_file:
         if "\t" in line:
             character, encoding = line.strip().split('\t')
@@ -158,7 +158,8 @@ with open('./flypydz.yaml', 'r', encoding='utf-8') as dict_file:
                 encoding_pre = encoding[:2]
                 encoding_post = encoding[2:]
                 if character in '去我而人他有是出哦配啊算的非个和就可了在小从这吧你吗':
-                    encoding_post = encoding_post.upper()
+                    if len(encoding_post) == 2:
+                        encoding_post = encoding_post[0] + encoding_post[1].upper()
                 if character not in dict_data:
                     dict_data[character] = encoding_post
 
